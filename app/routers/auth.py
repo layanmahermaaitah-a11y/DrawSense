@@ -1,5 +1,7 @@
 import random
 import smtplib
+import json
+import urllib.request
 from email.mime.text import MIMEText
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
@@ -13,30 +15,39 @@ from app.routers.auth2 import get_current_user
 router = APIRouter(tags=["Authentication"])
 
 
+
+
+
+
 def send_verification_email(receiver_email: str, code: str):
-   
-    sender_email = os.environ.get('EMAIL_USER')
-    sender_pass = os.environ.get('EMAIL_PASS')
+    api_key = os.environ.get('BREVO_API_KEY')
+    sender_email = os.environ.get('EMAIL_USER') # إيميل الجيميل الموثق
     
-    if not sender_email or not sender_pass:
-        print("تحذير: بيانات الإيميل غير موجودة في متغيرات البيئة")
+    if not api_key or not sender_email:
+        print("تحذير: بيانات Brevo أو الإيميل غير موجودة")
         return
 
-    msg = MIMEText(f"مرحباً بك في منصة DrawSense!\n\nكود التأكيد الخاص بك هو: {code}\n\nيرجى إدخال هذا الكود لتفعيل حسابك.")
-    msg['Subject'] = 'كود تفعيل حسابك في DrawSense'
-    msg['From'] = f"DrawSense <{sender_email}>"
-    msg['To'] = receiver_email
-
-    try:
+    url = "https://api.brevo.com/v3/smtp/email"
+    headers = {
+        "accept": "application/json",
+        "api-key": api_key,
+        "content-type": "application/json"
+    }
+    data = {
+        "sender": {"name": "DrawSense", "email": sender_email},
+        "to": [{"email": receiver_email}],
+        "subject": "كود تفعيل حسابك في DrawSense",
+        "htmlContent": f"<p>مرحباً بك!</p><p>كود التأكيد الخاص بك هو: <strong>{code}</strong></p>"
+    }
     
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.starttls()
-        server.login(sender_email, sender_pass)
-        server.sendmail(sender_email, receiver_email, msg.as_string())
-        server.quit()
-        print(f"✅ تم إرسال كود التفعيل بنجاح إلى: {receiver_email}")
+    req = urllib.request.Request(url, data=json.dumps(data).encode('utf-8'), headers=headers)
+    
+    try:
+        with urllib.request.urlopen(req) as response:
+            if response.status in [200, 201, 202]:
+                print(f"✅ تم إرسال كود التفعيل بنجاح إلى: {receiver_email}")
     except Exception as e:
-        print(f"❌ حدث خطأ أثناء إرسال الإيميل: {e}")
+        print(f"❌ حدث خطأ أثناء الاتصال بـ Brevo: {e}")
 
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
