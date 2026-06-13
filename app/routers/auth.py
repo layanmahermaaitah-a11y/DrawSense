@@ -160,24 +160,38 @@ def forgot_password(email: str, db: Session = Depends(database.get_db)):
     
     db.commit()
 
+    # جلب بيانات بريفو من متغيرات البيئة
+    api_key = os.environ.get('BREVO_API_KEY')
     sender_email = os.environ.get('EMAIL_USER')
-    sender_pass = os.environ.get('EMAIL_PASS')
     
-    if sender_email and sender_pass:
-        msg = MIMEText(f"طلب استعادة كلمة المرور في منصة DrawSense.\n\nكود الاستعادة الخاص بك هو: {reset_code}\n\n(هذا الكود صالح لمدة 5 دقائق)")
-        msg['Subject'] = 'استعادة كلمة المرور - DrawSense'
-        msg['From'] = f"DrawSense <{sender_email}>"
-        msg['To'] = email
+    if not api_key or not sender_email:
+        print("تحذير: بيانات Brevo أو الإيميل غير موجودة في متغيرات البيئة")
+        return {"message": "Reset code generated but email configuration is missing."}
 
-        try:
-            server = smtplib.SMTP('smtp.gmail.com', 587)
-            server.starttls()
-            server.login(sender_email, sender_pass)
-            server.sendmail(sender_email, email, msg.as_string())
-            server.quit()
-            print(f"✅ تم إرسال كود الاستعادة بنجاح إلى: {email}")
-        except Exception as e:
-            print(f"❌ حدث خطأ أثناء إرسال كود الاستعادة: {e}")
+    # إعداد الطلب لـ Brevo API
+    url = "https://api.brevo.com/v3/smtp/email"
+    headers = {
+        "accept": "application/json",
+        "api-key": api_key,
+        "content-type": "application/json"
+    }
+    data = {
+        "sender": {"name": "DrawSense", "email": sender_email},
+        "to": [{"email": email}],
+        "subject": "استعادة كلمة المرور - DrawSense",
+        "htmlContent": f"<p>طلب استعادة كلمة المرور في منصة DrawSense.</p><p>كود الاستعادة الخاص بك هو: <strong>{reset_code}</strong></p><p>(هذا الكود صالح لمدة 5 دقائق)</p>"
+    }
+    
+    import json
+    import urllib.request
+    req = urllib.request.Request(url, data=json.dumps(data).encode('utf-8'), headers=headers)
+    
+    try:
+        with urllib.request.urlopen(req) as response:
+            if response.status in [200, 201, 202]:
+                print(f"✅ تم إرسال كود الاستعادة بنجاح إلى: {email}")
+    except Exception as e:
+        print(f"❌ حدث خطأ أثناء الاتصال بـ Brevo لإرسال كود الاستعادة: {e}")
 
     return {"message": "Reset code has been generated and sent."}
 
