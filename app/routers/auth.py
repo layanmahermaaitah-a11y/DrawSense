@@ -149,7 +149,7 @@ def forgot_password(email: str, db: Session = Depends(database.get_db)):
     
     db.commit()
 
-   sender_email = os.environ.get('EMAIL_USER')
+    sender_email = os.environ.get('EMAIL_USER')
     sender_pass = os.environ.get('EMAIL_PASS')
     
     if sender_email and sender_pass:
@@ -168,6 +168,7 @@ def forgot_password(email: str, db: Session = Depends(database.get_db)):
         except Exception as e:
             print(f"❌ حدث خطأ أثناء إرسال كود الاستعادة: {e}")
 
+    return {"message": "Reset code has been generated and sent."}
 
 @router.post("/reset-password")
 def reset_password(payload: schemas.VerifyCodeRequest, db: Session = Depends(database.get_db)):
