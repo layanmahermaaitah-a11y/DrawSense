@@ -1,0 +1,12 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\app",
+    "\\app\\assets",
+    "\\app\\models",
+    "\\app\\routers",
+    "\\assets"
+  ],
+  "SelectedNode": "\\app\\routers\\auth.py",
+  "PreviewInSolutionExplorer": false
+}
