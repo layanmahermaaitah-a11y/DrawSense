@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="logo.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Sign Up</title>
+
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #dff4f8, #fff0d9);
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card {
+            width: 520px;
+            padding: 40px;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 25px 60px rgba(80, 130, 150, 0.25);
+            text-align: center;
+        }
+
+        h1 {
+            color: #35295f;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #555;
+            margin-bottom: 28px;
+        }
+
+        input {
+            width: 90%;
+            height: 45px;
+            border: none;
+            outline: none;
+            border-radius: 14px;
+            background: #f0f6f8;
+            padding: 0 15px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        button {
+            border: none;
+            padding: 14px 28px;
+            border-radius: 30px;
+            background: #ef4e7b;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 8px;
+        }
+
+        .secondary {
+            background: #34c8bf;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h1>Parent Sign Up</h1>
+        <p>Create a parent account for DrawSense.</p>
+
+        <form id="signupForm">
+            <input id="fullName" name="full_name" type="text" placeholder="Full Name" required>
+            <input id="email" name="email" type="email" placeholder="Email" required>
+            <input id="password" name="password" type="password" placeholder="Password" autocomplete="new-password" required>
+
+            <div id="signupAlert" style="margin: 10px 0; font-size: 14px; font-weight: bold; display: none;"></div>
+            <br>
+
+            <button type="submit">Create Account</button>
+            <button type="button" class="secondary" onclick="window.location.href='index.html'">Back Home</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("signupForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const fullName = document.getElementById("fullName").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
+            const alertBox = document.getElementById("signupAlert");
+
+            alertBox.style.display = "block";
+            alertBox.style.color = "#34c8bf";
+            alertBox.innerText = "Creating Account & Sending Code...";
+
+            try {
+                const response = await fetch("https://drawsense.onrender.com/auth/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        full_name: fullName,
+                        email: email,
+                        password: password,
+                        role: "parent"
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alertBox.style.color = "green";
+                    alertBox.innerText = "Code sent to your email!";
+                    localStorage.setItem("pending_email", email);
+                    setTimeout(() => { window.location.href = "verify.html"; }, 1500);
+                } else {
+                    alertBox.style.color = "#ef4e7b";
+                    let errorMsg = "Registration Failed.";
+                    if (data.detail) {
+                        if (Array.isArray(data.detail)) {
+                            errorMsg = data.detail[0].msg;
+                        } else {
+                            errorMsg = data.detail;
+                        }
+                    }
+                    alertBox.innerText = errorMsg;
+                }
+            } catch (error) {
+                alertBox.style.color = "#ef4e7b";
+                alertBox.innerText = "Server Connection Error.";
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>
