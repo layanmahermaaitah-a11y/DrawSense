@@ -475,7 +475,7 @@
                 formData.append("username", email);
                 formData.append("password", password);
 
-                const response = await fetch("https://drawsense.onrender.com", {
+                const response = await fetch("https://drawsense.onrender.com/auth/login", {
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
                     body: formData

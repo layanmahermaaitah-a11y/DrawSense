@@ -184,15 +184,19 @@ async def upload_avatar(
     db: Session = Depends(database.get_db), 
     current_user: models.User = Depends(get_current_user)
 ):
-    # إنشاء اسم فريد للصورة وحفظها
+ 
+    upload_dir = "assets/avatars"
+    os.makedirs(upload_dir, exist_ok=True)
+    
+
     file_extension = file.filename.split(".")[-1]
     file_name = f"{uuid.uuid4()}.{file_extension}"
-    file_path = os.path.join("assets/avatars", file_name)
+    file_path = os.path.join(upload_dir, file_name)
     
     with open(file_path, "wb") as buffer:
         buffer.write(await file.read())
         
-    # تحديث مسار الصورة في قاعدة البيانات
+  
     current_user.profile_image = file_path
     db.commit()
     

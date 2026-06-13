@@ -3,8 +3,12 @@
   "WorkspaceRootPath": "C:\\Users\\Admin\\Desktop\\web\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Admin\\Desktop\\web\\web\\verify.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:web\\verify.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Admin\\Desktop\\web\\web\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:web\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Admin\\Desktop\\web\\web\\favorites.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:web\\favorites.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Admin\\Desktop\\web\\web\\forgot-password.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
@@ -15,16 +19,12 @@
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:web\\gallery.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Admin\\Desktop\\web\\web\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:web\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Admin\\Desktop\\web\\web\\verify.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:web\\verify.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Admin\\Desktop\\web\\web\\signup.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:web\\signup.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Admin\\Desktop\\web\\web\\favorites.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:web\\favorites.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Admin\\Desktop\\web\\web\\contact.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
@@ -42,7 +42,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 350,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 8,
           "Children": [
             {
               "$type": "Bookmark",
@@ -50,19 +50,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "contact.html",
-              "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\web\\web\\contact.html",
-              "RelativeDocumentMoniker": "web\\contact.html",
-              "ToolTip": "C:\\Users\\Admin\\Desktop\\web\\web\\contact.html",
-              "RelativeToolTip": "web\\contact.html",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
-              "WhenOpened": "2026-06-12T21:25:17.496Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 1,
               "Title": "favorites.html",
               "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\web\\web\\favorites.html",
               "RelativeDocumentMoniker": "web\\favorites.html",
@@ -87,20 +75,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "forgot-password.html",
-              "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\web\\web\\forgot-password.html",
-              "RelativeDocumentMoniker": "web\\forgot-password.html",
-              "ToolTip": "C:\\Users\\Admin\\Desktop\\web\\web\\forgot-password.html",
-              "RelativeToolTip": "web\\forgot-password.html",
-              "ViewState": "AQIAALIAAAAAAAAAAAAkwNMAAAAHAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
-              "WhenOpened": "2026-06-12T14:44:52.79Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 4,
               "Title": "verify.html",
               "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\web\\web\\verify.html",
               "RelativeDocumentMoniker": "web\\verify.html",
@@ -113,7 +88,32 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "contact.html",
+              "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\web\\web\\contact.html",
+              "RelativeDocumentMoniker": "web\\contact.html",
+              "ToolTip": "C:\\Users\\Admin\\Desktop\\web\\web\\contact.html",
+              "RelativeToolTip": "web\\contact.html",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-06-12T21:25:17.496Z"
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 2,
+              "Title": "forgot-password.html",
+              "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\web\\web\\forgot-password.html",
+              "RelativeDocumentMoniker": "web\\forgot-password.html",
+              "ToolTip": "C:\\Users\\Admin\\Desktop\\web\\web\\forgot-password.html",
+              "RelativeToolTip": "web\\forgot-password.html",
+              "ViewState": "AQIAALIAAAAAAAAAAAAkwNMAAAAHAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-06-12T14:44:52.79Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "gallery.html",
               "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\web\\web\\gallery.html",
               "RelativeDocumentMoniker": "web\\gallery.html",
@@ -126,7 +126,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "signup.html",
               "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\web\\web\\signup.html",
               "RelativeDocumentMoniker": "web\\signup.html",
@@ -139,7 +139,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 0,
               "Title": "index.html",
               "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\web\\web\\index.html",
               "RelativeDocumentMoniker": "web\\index.html",

@@ -49,11 +49,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# الروابط الثابتة والـ Routers
-app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 
-app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
+
+
+app.include_router(auth.router, prefix="/auth")
 app.include_router(drawings.router, tags=["Drawings Analysis"])
+
+app.mount("/assets", StaticFiles(directory="assets"), name="assets")
+app.mount("/", StaticFiles(directory="frontend", html=True), name="static")
 
 
 @app.get("/", tags=["General"])
@@ -67,4 +70,4 @@ def home():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("app.main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
