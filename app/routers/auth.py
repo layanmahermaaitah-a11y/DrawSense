@@ -12,12 +12,31 @@ from app.routers.auth2 import get_current_user
 
 router = APIRouter(tags=["Authentication"])
 
+
 def send_verification_email(receiver_email: str, code: str):
-    print("\n" + "="*50)
-    print(f"📧 DRAW SENSE EMAIL SYSTEM:")
-    print(f"👉 Sent to: {receiver_email}")
-    print(f"🔑 Verification Code is: {code}")
-    print("="*50 + "\n")
+   
+    sender_email = os.environ.get('EMAIL_USER')
+    sender_pass = os.environ.get('EMAIL_PASS')
+    
+    if not sender_email or not sender_pass:
+        print("تحذير: بيانات الإيميل غير موجودة في متغيرات البيئة")
+        return
+
+    msg = MIMEText(f"مرحباً بك في منصة DrawSense!\n\nكود التأكيد الخاص بك هو: {code}\n\nيرجى إدخال هذا الكود لتفعيل حسابك.")
+    msg['Subject'] = 'كود تفعيل حسابك في DrawSense'
+    msg['From'] = f"DrawSense <{sender_email}>"
+    msg['To'] = receiver_email
+
+    try:
+    
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(sender_email, sender_pass)
+        server.sendmail(sender_email, receiver_email, msg.as_string())
+        server.quit()
+        print(f"✅ تم إرسال كود التفعيل بنجاح إلى: {receiver_email}")
+    except Exception as e:
+        print(f"❌ حدث خطأ أثناء إرسال الإيميل: {e}")
 
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
@@ -130,14 +149,24 @@ def forgot_password(email: str, db: Session = Depends(database.get_db)):
     
     db.commit()
 
-    # 3. طباعة الكود بالـ Terminal 
-    print("\n" + "="*50)
-    print(f"🔑 DRAW SENSE PASSWORD RESET SYSTEM:")
-    print(f"👉 Reset requested for: {email}")
-    print(f"🔑 Reset Code is: {reset_code}")
-    print("="*50 + "\n")
+   sender_email = os.environ.get('EMAIL_USER')
+    sender_pass = os.environ.get('EMAIL_PASS')
+    
+    if sender_email and sender_pass:
+        msg = MIMEText(f"طلب استعادة كلمة المرور في منصة DrawSense.\n\nكود الاستعادة الخاص بك هو: {reset_code}\n\n(هذا الكود صالح لمدة 5 دقائق)")
+        msg['Subject'] = 'استعادة كلمة المرور - DrawSense'
+        msg['From'] = f"DrawSense <{sender_email}>"
+        msg['To'] = email
 
-    return {"message": "Reset code has been generated and sent."}
+        try:
+            server = smtplib.SMTP('smtp.gmail.com', 587)
+            server.starttls()
+            server.login(sender_email, sender_pass)
+            server.sendmail(sender_email, email, msg.as_string())
+            server.quit()
+            print(f"✅ تم إرسال كود الاستعادة بنجاح إلى: {email}")
+        except Exception as e:
+            print(f"❌ حدث خطأ أثناء إرسال كود الاستعادة: {e}")
 
 
 @router.post("/reset-password")
