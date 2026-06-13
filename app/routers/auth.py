@@ -11,6 +11,7 @@ from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 import os
 import uuid
 from app.routers.auth2 import get_current_user
+from pydantic import BaseModel, EmailStr
 
 router = APIRouter(tags=["Authentication"])
 
@@ -160,7 +161,6 @@ def forgot_password(email: str, db: Session = Depends(database.get_db)):
     
     db.commit()
 
-    # جلب بيانات بريفو من متغيرات البيئة
     api_key = os.environ.get('BREVO_API_KEY')
     sender_email = os.environ.get('EMAIL_USER')
     
@@ -195,9 +195,40 @@ def forgot_password(email: str, db: Session = Depends(database.get_db)):
 
     return {"message": "Reset code has been generated and sent."}
 
+
+
+class ResetPasswordInput(BaseModel):
+    email: EmailStr
+    code: str
+    new_password: str
+
+
 @router.post("/reset-password")
-def reset_password(payload: schemas.VerifyCodeRequest, db: Session = Depends(database.get_db)):
-    pass
+def reset_password(data: ResetPasswordInput, db: Session = Depends(database.get_db)):
+    
+    user = db.query(models.User).filter(models.User.email == data.email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Email not found.")
+    
+   
+    if not user.verification_code or user.verification_code != data.code:
+        raise HTTPException(status_code=400, detail="Invalid reset code.")
+        
+ 
+    if user.verification_expires_at and datetime.now() > user.verification_expires_at:
+        raise HTTPException(status_code=400, detail="Reset code has expired.")
+        
+    
+    user.hashed_password = utils.hash(data.new_password)
+    
+
+    user.verification_code = None
+    user.verification_expires_at = None
+    
+  
+    db.commit()
+    
+    return {"message": "Password has been reset successfully. You can now login with your new password."}
 
 
 @router.put("/profile", response_model=schemas.UserResponse)
