@@ -7,7 +7,6 @@ from typing import List
 from app import models, schemas, database
 from app.routers.auth2 import get_current_user
 
-
 router = APIRouter(tags=["Drawings Analysis"])
 
 UPLOAD_DIR = "assets/drawings"
@@ -23,7 +22,6 @@ def validate_extension(filename: str):
     return ext
 
 
-
 @router.post("/upload", status_code=status.HTTP_201_CREATED, response_model=schemas.DrawingResponse)
 async def upload_and_analyze(
         title: str = Form("Child's Drawing'"),  
@@ -34,11 +32,11 @@ async def upload_and_analyze(
 ):
 
     # المودل جاهز؟
-  #  if model_container.get("model") is None:
-   #     raise HTTPException(
-    #        status_code=503,
-    #        detail="محرك التحليل الذكي غير جاهز حاليًا، يرجى المحاولة لاحقًا"
-    #    )
+    # if model_container.get("model") is None:
+    #     raise HTTPException(
+    #         status_code=503,
+    #         detail="محرك التحليل الذكي غير جاهز حاليًا، يرجى المحاولة لاحقًا"
+    #     )
 
     # لازم صورة
     if not file.content_type.startswith("image/"):
@@ -62,18 +60,20 @@ async def upload_and_analyze(
         raise HTTPException(status_code=500, detail="فشل في حفظ الصورة على السيرفر")
 
     #  تحليل الـ AI
-  #  try:
-   #     ai_results = await run_ai_analysis(file_path)
-  #  except Exception as e:
-       # if os.path.exists(file_path):
-       #     os.remove(file_path)
-     #   raise HTTPException(status_code=500, detail=f"فشل تحليل الـ AI: {str(e)}")
+    # try:
+    #     ai_results = await run_ai_analysis(file_path)
+    # except Exception as e:
+    #     if os.path.exists(file_path):
+    #         os.remove(file_path)
+    #     raise HTTPException(status_code=500, detail=f"فشل تحليل الـ AI: {str(e)}")
 
-    # الحفظ في الداتابيز
+    mock_analysis = "هذا نص تحليلي تجريبي. سيظهر هنا تحليل الذكاء الاصطناعي للألوان والرموز النفسية في الرسمة بمجرد ربط المودل بالكامل."
+    
     drawing_data = {
         "user_id": current_user.id,
         "image_url": file_path.replace("\\", "/"),
-        "is_favorite": is_favorite
+        "is_favorite": is_favorite,  # تم إصلاح الفاصلة المفقودة هنا
+        "analysis_output": mock_analysis
     }
     
     # الحقل موجود؟
@@ -92,7 +92,7 @@ async def upload_and_analyze(
         "created_at": new_drawing.uploaded_at,  
         "title": title,
         "is_favorite": new_drawing.is_favorite,
-        "analysis_output": None
+        "analysis_output": mock_analysis  # تم التعديل لإرجاع التحليل فوراً بعد الرفع
     }
 
 @router.get("/my-drawings", response_model=List[schemas.DrawingResponse])
@@ -109,7 +109,6 @@ def get_my_drawings(
         .limit(limit) \
         .all()
     
-  
     result_list = []
     for d in drawings:
         result_list.append({
@@ -145,9 +144,6 @@ def delete_drawing(
     db.commit()
     return {"message": "حُذِفت الرسمة بنجاح"}
 
-
-
-
 @router.get("/favorites", response_model=List[schemas.DrawingResponse])
 def get_favorite_drawings(
         db: Session = Depends(database.get_db),
@@ -155,7 +151,6 @@ def get_favorite_drawings(
         skip: int = 0,
         limit: int = 10
 ):
-    
     drawings = db.query(models.Drawing) \
         .filter(models.Drawing.user_id == current_user.id, models.Drawing.is_favorite == True) \
         .order_by(models.Drawing.id.desc()) \
@@ -177,14 +172,12 @@ def get_favorite_drawings(
         
     return result_list
 
-
 @router.patch("/{drawing_id}/toggle-favorite")
 def toggle_drawing_favorite(
         drawing_id: int,
         db: Session = Depends(database.get_db),
         current_user: models.User = Depends(get_current_user)
 ):
-    
     drawing = db.query(models.Drawing).filter(
         models.Drawing.id == drawing_id,
         models.Drawing.user_id == current_user.id
@@ -193,7 +186,6 @@ def toggle_drawing_favorite(
     if not drawing:
         raise HTTPException(status_code=404, detail="الرسمة غير موجودة")
 
-  
     drawing.is_favorite = not drawing.is_favorite
     db.commit()
     db.refresh(drawing)
@@ -203,4 +195,28 @@ def toggle_drawing_favorite(
         "message": f"تم {status_str} المفضلة بنجاح",
         "drawing_id": drawing.id,
         "is_favorite": drawing.is_favorite
+    }
+
+@router.get("/{drawing_id}", response_model=schemas.DrawingResponse)
+def get_drawing_details(
+        drawing_id: int,
+        db: Session = Depends(database.get_db),
+        current_user: models.User = Depends(get_current_user)
+):
+    drawing = db.query(models.Drawing).filter(
+        models.Drawing.id == drawing_id,
+        models.Drawing.user_id == current_user.id
+    ).first()
+
+    if not drawing:
+        raise HTTPException(status_code=404, detail="الرسمة غير موجودة أو لا تملك صلاحية عرضها")
+
+    return {
+        "id": drawing.id,
+        "user_id": drawing.user_id,
+        "image_url": drawing.image_url,
+        "created_at": drawing.uploaded_at,  
+        "title": getattr(drawing, 'title', None) or "رسمة طفل",
+        "is_favorite": drawing.is_favorite,
+        "analysis_output": getattr(drawing, 'analysis_output', None) or "هذا نص تحليلي تجريبي مؤقت لحين ربط المودل."
     }
