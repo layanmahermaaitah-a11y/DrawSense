@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy import text  
 
 from app import models
 from app.database import engine
@@ -18,6 +19,13 @@ async def lifespan(app: FastAPI):
 
     print("Starting DrawSense API & Initializing Resources...")
     models.Base.metadata.create_all(bind=engine)
+
+    try:
+        with engine.begin() as connection:
+            connection.execute(text("ALTER TABLE drawings ADD COLUMN IF NOT EXISTS analysis_output TEXT;"))
+        print("✅ تم تحديث قاعدة البيانات بنجاح وإضافة حقل التحليل!")
+    except Exception as e:
+        print(f"⚠️ تنبيه بخصوص قاعدة البيانات: {e}")
 
     os.makedirs("assets/drawings", exist_ok=True)
     os.makedirs("models", exist_ok=True)
@@ -37,13 +45,11 @@ app = FastAPI(
 # الإعدادات لـ CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://drawsense-1.onrender.com"],
+    allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
 
 
 app.include_router(auth.router, prefix="/auth")

@@ -33,6 +33,7 @@ class Drawing(Base):
     image_url = Column(Text, nullable=False)
     uploaded_at = Column(DateTime, server_default=func.now())
     is_favorite = Column(Boolean, default=False, nullable=False)
+    analysis_output = Column(Text, nullable=True)
 
     # العلاقات
     owner = relationship("User", back_populates="drawings")
