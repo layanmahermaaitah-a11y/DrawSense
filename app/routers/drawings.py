@@ -6,7 +6,7 @@ from typing import List
 
 from app import models, schemas, database
 from app.routers.auth2 import get_current_user
-from app.ai_logic import run_ai_analysis, model_container
+
 
 router = APIRouter(tags=["Drawings Analysis"])
 
@@ -27,23 +27,25 @@ def validate_extension(filename: str):
 @router.post("/upload", status_code=status.HTTP_201_CREATED, response_model=schemas.DrawingResponse)
 async def upload_and_analyze(
         title: str = Form("Child's Drawing'"),  
+        is_favorite: bool = Form(False),
         file: UploadFile = File(...),
         db: Session = Depends(database.get_db),
         current_user: models.User = Depends(get_current_user)
 ):
+
     # المودل جاهز؟
-    if model_container.get("model") is None:
-        raise HTTPException(
-            status_code=503,
-            detail="محرك التحليل الذكي غير جاهز حاليًا، يرجى المحاولة لاحقًا"
-        )
+  #  if model_container.get("model") is None:
+   #     raise HTTPException(
+    #        status_code=503,
+    #        detail="محرك التحليل الذكي غير جاهز حاليًا، يرجى المحاولة لاحقًا"
+    #    )
 
     # لازم صورة
     if not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="يجب رفع ملف صورة فقط")
 
     file_extension = validate_extension(file.filename)
-
+   
     #  حفظ الملف على السيرفر
     os.makedirs(UPLOAD_DIR, exist_ok=True)
     unique_filename = f"{uuid.uuid4()}.{file_extension}"
@@ -60,17 +62,18 @@ async def upload_and_analyze(
         raise HTTPException(status_code=500, detail="فشل في حفظ الصورة على السيرفر")
 
     #  تحليل الـ AI
-    try:
-        ai_results = await run_ai_analysis(file_path)
-    except Exception as e:
-        if os.path.exists(file_path):
-            os.remove(file_path)
-        raise HTTPException(status_code=500, detail=f"فشل تحليل الـ AI: {str(e)}")
+  #  try:
+   #     ai_results = await run_ai_analysis(file_path)
+  #  except Exception as e:
+       # if os.path.exists(file_path):
+       #     os.remove(file_path)
+     #   raise HTTPException(status_code=500, detail=f"فشل تحليل الـ AI: {str(e)}")
 
     # الحفظ في الداتابيز
     drawing_data = {
         "user_id": current_user.id,
         "image_url": file_path.replace("\\", "/")
+        "is_favorite": is_favorite
     }
     
     # الحقل موجود؟
@@ -81,7 +84,6 @@ async def upload_and_analyze(
     db.add(new_drawing)
     db.commit()
     db.refresh(new_drawing)
-
    
     return {
         "id": new_drawing.id,

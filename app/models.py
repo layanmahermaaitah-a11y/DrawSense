@@ -12,7 +12,6 @@ class User(Base):
     hashed_password = Column(String(255), nullable=False)
     full_name = Column(String(100), nullable=True)
     
-    # الإضافات الجديدة
     bio = Column(Text, nullable=True) 
     email_notifications = Column(Boolean, default=True) 
 

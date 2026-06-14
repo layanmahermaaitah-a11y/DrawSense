@@ -12,8 +12,6 @@ ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60))
 # Setup Password Hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-
-# قمت بتغيير أسماء الدوال لتطابق الاستدعاء في auth.py
 def hash(password: str) -> str:
     """Generates a secure bcrypt hash of the plain-text password."""
     return pwd_context.hash(password)

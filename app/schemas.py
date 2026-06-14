@@ -5,8 +5,8 @@ from datetime import datetime
 class UserBase(BaseModel):
     email: EmailStr
     full_name: Optional[str] = None
-    bio: Optional[str] = None # إضافة
-    email_notifications: Optional[bool] = True # إضافة
+    bio: Optional[str] = None 
+    email_notifications: Optional[bool] = True 
 
 class UserCreate(UserBase):
     password: str = Field(..., min_length=8, max_length=72)

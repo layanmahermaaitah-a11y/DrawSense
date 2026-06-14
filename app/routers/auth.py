@@ -17,12 +17,9 @@ router = APIRouter(tags=["Authentication"])
 
 
 
-
-
-
 def send_verification_email(receiver_email: str, code: str):
     api_key = os.environ.get('BREVO_API_KEY')
-    sender_email = os.environ.get('EMAIL_USER') # إيميل الجيميل الموثق
+    sender_email = os.environ.get('EMAIL_USER')
     
     if not api_key or not sender_email:
         print("تحذير: بيانات Brevo أو الإيميل غير موجودة")

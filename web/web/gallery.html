@@ -14,7 +14,7 @@
 
         body {
             min-height: 100vh;
-            /* تم توحيد الخلفية لتطابق index.html */
+        
             background: radial-gradient(circle at 12% 18%, rgba(255, 199, 213, 0.4) 0, transparent 25%), radial-gradient(circle at 88% 15%, rgba(178, 235, 242, 0.4) 0, transparent 28%), linear-gradient(135deg, #fff3f8, #eefaff 45%, #fff7df);
             font-family: Arial, sans-serif;
             display: flex;
@@ -23,7 +23,6 @@
 
         .sidebar {
             width: 90px;
-            /* تم استخدام التدرج اللوني الاحترافي الخاص ببطاقة تسجيل الدخول */
             background: linear-gradient(145deg, #6c63a8, #4a3b78);
             min-height: 100vh;
             display: flex;
@@ -816,7 +815,7 @@
             <span class="menu-icon">⭐</span>
             <span class="menu-text">Favorites</span>
         </a>
-        <a class="menu-item" onclick="window.location.href='contact.html'">
+        <a class="menu-item" onclick="openContactModal()">
             <span class="menu-icon">📞</span>
             <span class="menu-text">Contact Us</span>
         </a>
@@ -919,6 +918,44 @@
             <div class="modal-buttons" style="margin-top: 35px;">
                 <button class="modal-btn btn-cancel" onclick="closeSettingsModal()">Close</button>
                 <button class="modal-btn btn-confirm" onclick="saveSettings()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+    <div class="modal-overlay" id="contactModal">
+        <div class="cozy-modal">
+            <h3>Contact Us 📞</h3>
+            <p>We'd love to hear from you! Reach out through any of the following channels:</p>
+            <div style="text-align: left; background: #f0f6f8; padding: 20px; border-radius: 20px; margin-bottom: 20px;">
+                <p style="margin-bottom: 10px; color: #4a3b78;"><strong>📧 Email:</strong> support@drawsense.com</p>
+                <p style="margin-bottom: 10px; color: #4a3b78;"><strong>📱 Phone:</strong> +962 7X XXX XXXX</p>
+                <p style="margin-bottom: 0; color: #4a3b78;"><strong>🌐 Social:</strong> @DrawSenseAI</p>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn btn-confirm" onclick="closeContactModal()">Got it!</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="uploadDetailsModal">
+        <div class="cozy-modal">
+            <h3 style="margin-bottom: 25px;">Artwork Details 🎨</h3>
+
+            <div class="form-group" style="text-align: left;">
+                <label>Drawing Title</label>
+                <input type="text" id="drawingTitleInput" class="form-control" placeholder="e.g., My Beautiful House">
+            </div>
+
+            <div class="toggle-wrapper" style="margin-top: 20px;">
+                <span class="toggle-text">Add to Favorites ⭐</span>
+                <label class="switch">
+                    <input type="checkbox" id="drawingFavoriteToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="modal-buttons" style="margin-top: 30px;">
+                <button class="modal-btn btn-cancel" onclick="closeUploadModal()">Cancel</button>
+                <button class="modal-btn btn-confirm" onclick="submitDrawingUpload()">Upload</button>
             </div>
         </div>
     </div>
@@ -1105,7 +1142,7 @@
                 document.getElementById("sidebarUserName").innerText = user.full_name || "User";
                 document.getElementById("profileEmail").innerText = user.email;
 
-                // جلب البايو وعرضه
+
                 document.getElementById("profileBio").innerText = user.bio || "No bio added yet.";
 
                 const avatar = document.getElementById("userAvatar");
@@ -1122,13 +1159,43 @@
 
         function triggerUpload() { document.getElementById('fileInput').click(); }
 
-        async function handleFileSelect(event) {
+ 
+        let pendingUploadFile = null;
+
+        function handleFileSelect(event) {
             const file = event.target.files[0];
             if (!file) return;
+
+            pendingUploadFile = file;
+
+            document.getElementById("drawingTitleInput").value = "";
+            document.getElementById("drawingFavoriteToggle").checked = false;
+            document.getElementById("uploadDetailsModal").classList.add("active");
+
+            event.target.value = "";
+        }
+
+        function closeUploadModal() {
+            document.getElementById("uploadDetailsModal").classList.remove("active");
+            pendingUploadFile = null;
+        }
+
+     
+        async function submitDrawingUpload() {
+            if (!pendingUploadFile) return;
+
+            const title = document.getElementById("drawingTitleInput").value.trim() || "Untitled Drawing";
+            const isFavorite = document.getElementById("drawingFavoriteToggle").checked;
+
             const token = localStorage.getItem("token");
             const formData = new FormData();
-            formData.append("file", file);
-            formData.append("title", file.name);
+
+            formData.append("file", pendingUploadFile);
+            formData.append("title", title);
+            formData.append("is_favorite", isFavorite);
+
+            closeUploadModal();
+            showNotification("Uploading...", true);
 
             try {
                 const response = await fetch(`${BASE_URL}/drawings/upload`, {
@@ -1136,34 +1203,72 @@
                     headers: { "Authorization": `Bearer ${token}` },
                     body: formData
                 });
+
                 if (response.ok) {
                     loadMyDrawings();
                     showNotification("Drawing uploaded successfully!", true);
                 } else {
-                    showNotification("Upload failed.", false);
+                    showNotification("Upload failed. Please check the backend.", false);
                 }
-            } catch (error) { showNotification("Connection error", false); }
+            } catch (error) {
+                showNotification("Connection error. Is the server running?", false);
+            }
         }
 
         async function loadMyDrawings() {
             const token = localStorage.getItem("token");
             try {
-                const response = await fetch(`${BASE_URL}/drawings/`, {
+                const response = await fetch(`${BASE_URL}/drawings/my-drawings`, {
                     headers: { "Authorization": `Bearer ${token}` }
                 });
                 if (response.ok) {
                     const drawings = await response.json();
                     const grid = document.getElementById('galleryGrid');
+
                     grid.innerHTML = drawings.map(d => `
-                                        <div class="drawing-card">
-                                            <button class="delete-btn" onclick="openDeleteModal(${d.id})">🗑️</button>
-                                            <div class="drawing-img-wrapper"><img src="${BASE_URL}/${d.image_url}" alt="${d.title}"></div>
-                                            <span>${d.title || 'Untitled'}</span>
-                                        </div>
-                                    `).join("");
+                      <div class="drawing-card">
+                       <button class="delete-btn" onclick="openDeleteModal(${d.id})">🗑️</button>
+                         <button class="favorite-btn" onclick="toggleFavorite(${d.id}, ${d.is_favorite})" style="position: absolute; top: -10px; left: -10px; background: ${d.is_favorite ? '#ffd166' : '#fff'}; border: 2px solid #ffd166; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; font-size: 15px; z-index: 10; transition: all 0.3s ease;">⭐</button>
+                         <div class="drawing-img-wrapper"><img src="${BASE_URL}/${d.image_url}" alt="${d.title}"></div>
+                           <span>${d.title || 'Untitled'}</span>
+                      </div>
+                            `).join("");
                 }
             } catch (e) { console.error(e); }
         }
+
+
+
+        async function toggleFavorite(drawingId, currentStatus) {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                showNotification("Please log in first", false);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BASE_URL}/drawings/${drawingId}/toggle-favorite`, {
+                    method: "PATCH",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+
+                    showNotification(data.message, true);
+                    loadMyDrawings();
+                } else {
+                    showNotification("Failed to update favorite status.", false);
+                }
+            } catch (error) {
+                console.error("Error toggling favorite:", error);
+                showNotification("Connection error. Is the server running?", false);
+            }
+        }
+
 
         function openDeleteModal(drawingId) {
             currentDeleteId = drawingId;
@@ -1214,6 +1319,13 @@
             await loadCurrentUser();
             await loadMyDrawings();
         });
+
+        function openContactModal() {
+            document.getElementById("contactModal").classList.add("active");
+        }
+        function closeContactModal() {
+            document.getElementById("contactModal").classList.remove("active");
+        }
     </script>
 </body>
 </html>

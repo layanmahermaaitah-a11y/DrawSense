@@ -9,7 +9,6 @@ from fastapi.staticfiles import StaticFiles
 from app import models
 from app.database import engine
 from app.routers import auth, drawings
-from app.ai_logic import load_drawsense_model
 
 load_dotenv()
 
@@ -24,11 +23,6 @@ async def lifespan(app: FastAPI):
     os.makedirs("models", exist_ok=True)
     os.makedirs("assets/avatars", exist_ok=True)
 
-    try:
-        load_drawsense_model()
-        print("✅ AI Model Loaded Successfully")
-    except Exception as e:
-        print(f"Error loading AI Model: {e}")
     yield  
     print("Stopping DrawSense API...")
 
@@ -53,7 +47,7 @@ app.add_middleware(
 
 
 app.include_router(auth.router, prefix="/auth")
-app.include_router(drawings.router, tags=["Drawings Analysis"])
+app.include_router(drawings.router, prefix="/drawings", tags=["Drawings Analysis"])
 
 app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 app.mount("/", StaticFiles(directory="web", html=True), name="static")
