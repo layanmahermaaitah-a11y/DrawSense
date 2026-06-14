@@ -72,7 +72,7 @@ async def upload_and_analyze(
     # الحفظ في الداتابيز
     drawing_data = {
         "user_id": current_user.id,
-        "image_url": file_path.replace("\\", "/")
+        "image_url": file_path.replace("\\", "/"),
         "is_favorite": is_favorite
     }
     
